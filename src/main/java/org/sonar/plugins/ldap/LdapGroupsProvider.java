@@ -54,6 +54,7 @@ public class LdapGroupsProvider extends ExternalGroupsProvider {
   /**
    * @throws SonarException if unable to retrieve groups
    */
+  @Override
   public Collection<String> doGetGroups(String username) {
     try {
       LOG.debug("Requesting groups for user {}", username);
@@ -64,10 +65,10 @@ public class LdapGroupsProvider extends ExternalGroupsProvider {
         // user not found
         return Collections.emptyList();
       }
-      String fq = searchResult.getNameInNamespace();
 
-      NamingEnumeration result = groupMapping.createSearch(contextFactory, fq)
-          .find();
+      NamingEnumeration result = groupMapping.createSearch(contextFactory,
+          searchResult.getNameInNamespace(),
+          username).find();
       HashSet<String> groups = Sets.newHashSet();
       while (result.hasMoreElements()) {
         SearchResult obj = (SearchResult) result.nextElement();

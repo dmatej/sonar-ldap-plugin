@@ -58,4 +58,25 @@ public class LdapGroupsProviderTest {
 
     groupsProvider.doGetGroups("notfound");
   }
+
+  @Test
+  public void testPosix() throws Exception {
+    LdapContextFactory contextFactory = LdapContextFactories.createForAnonymousAccess(server.getUrl());
+    Settings settings = new Settings()
+      .setProperty("ldap.group.idAttribute", "cn")
+      .setProperty("ldap.group.objectClass", "posixGroup")
+      .setProperty("ldap.group.memberAttribute", "memberUid")
+      .setProperty("ldap.group.request", "(&(objectClass={0})({1}={3}))")
+      .setProperty("ldap.user.baseDn", "ou=users,dc=example,dc=org")
+      .setProperty("ldap.group.baseDn", "ou=groups,dc=example,dc=org");
+    LdapUserMapping userMapping = new LdapUserMapping(settings);
+    LdapGroupMapping groupMapping = new LdapGroupMapping(settings);
+    LdapGroupsProvider groupsProvider = new LdapGroupsProvider(contextFactory, userMapping, groupMapping);
+
+    Collection<String> groups;
+
+    groups = groupsProvider.doGetGroups("dmatej");
+    assertThat(groups.size(), is(1));
+    assertThat(groups, hasItem("linux-users"));
+  }
 }

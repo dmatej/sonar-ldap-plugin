@@ -36,6 +36,25 @@ mail: godin@example.org
 uid: godin
 userpassword: secret1
 
+# Posix user2
+dn: cn=David Matějček,ou=users,dc=example,dc=org
+objectClass: organizationalPerson
+objectClass: person
+objectClass: extensibleObject
+objectClass: uidObject
+objectClass: inetOrgPerson
+objectClass: top
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: David Matějček
+sn: Matějček
+givenname: David
+mail: dmatej@example.org
+uid: dmatej
+gidNumber: 10000
+uidNumber: 1001
+homeDirectory: /home/dmatej
+
 # Just one more user
 dn: cn=Tester Testerovich,ou=users,dc=example,dc=org
 objectClass: organizationalPerson
@@ -71,3 +90,11 @@ dn: cn=sonar-developers,ou=groups,dc=example,dc=org
 objectclass: groupOfUniqueNames
 cn: sonar-developers
 uniqueMember: cn=Evgeny Mandrikov,ou=users,dc=example,dc=org
+
+# linux-users
+dn: cn=linux-users,ou=groups,dc=example,dc=org
+objectclass: posixGroup
+objectclass: top
+cn: linux-users
+gidNumber: 10000
+memberUid: dmatej

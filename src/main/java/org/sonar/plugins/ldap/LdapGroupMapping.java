@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.ldap;
 
+import javax.naming.directory.SearchResult;
+
 import com.google.common.base.Objects;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.config.Settings;
@@ -31,10 +33,12 @@ public class LdapGroupMapping {
   private static final String DEFAULT_OBJECT_CLASS = "groupOfUniqueNames";
   private static final String DEFAULT_ID_ATTRIBUTE = "cn";
   private static final String DEFAULT_MEMBER_ATTRIBUTE = "uniqueMember";
+  private static final String DEFAULT_REQUEST = "(&(objectClass={0})({1}={2}))";
   private final String baseDn;
   private final String objectClass;
   private final String idAttribute;
   private final String memberAttribute;
+  private final String request;
 
   /**
    * Constructs mapping from Sonar settings.
@@ -44,16 +48,17 @@ public class LdapGroupMapping {
     this.objectClass = StringUtils.defaultString(settings.getString("ldap.group.objectClass"), DEFAULT_OBJECT_CLASS);
     this.idAttribute = StringUtils.defaultString(settings.getString("ldap.group.idAttribute"), DEFAULT_ID_ATTRIBUTE);
     this.memberAttribute = StringUtils.defaultString(settings.getString("ldap.group.memberAttribute"), DEFAULT_MEMBER_ATTRIBUTE);
+    this.request = StringUtils.defaultString(settings.getString("ldap.group.request"), DEFAULT_REQUEST);
   }
 
   /**
    * Search for this mapping.
    */
-  public LdapSearch createSearch(LdapContextFactory contextFactory, String username) {
+  public LdapSearch createSearch(LdapContextFactory contextFactory, String namespaceId, String userId) {
     return new LdapSearch(contextFactory)
         .setBaseDn(getBaseDn())
-        .setRequest("(&(objectClass=" + getObjectClass() + ")(" + getMemberAttribute() + "={0}))")
-        .setParameters(username)
+        .setRequest(getRequest())
+        .setParameters(getObjectClass(), getMemberAttribute(), namespaceId, userId)
         .returns(getIdAttribute());
   }
 
@@ -85,6 +90,13 @@ public class LdapGroupMapping {
     return memberAttribute;
   }
 
+  /**
+   * LDAP request.
+   */
+  public String getRequest() {
+    return request;
+  }
+
   @Override
   public String toString() {
     return Objects.toStringHelper(this)
@@ -92,6 +104,7 @@ public class LdapGroupMapping {
         .add("objectClass", getObjectClass())
         .add("idAttribute", getIdAttribute())
         .add("memberAttribute", getMemberAttribute())
+        .add("request", getRequest())
         .toString();
   }
 

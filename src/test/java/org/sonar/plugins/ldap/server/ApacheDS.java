@@ -19,10 +19,20 @@
  */
 package org.sonar.plugins.ldap.server;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.io.Closeables;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.Map;
+
+import javax.naming.Context;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+import javax.naming.ldap.InitialLdapContext;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.directory.server.constants.ServerDNConstants;
 import org.apache.directory.server.core.CoreSession;
@@ -48,15 +58,10 @@ import org.apache.directory.shared.ldap.ldif.LdifEntry;
 import org.apache.directory.shared.ldap.ldif.LdifReader;
 import org.apache.mina.util.AvailablePortFinder;
 
-import javax.naming.Context;
-import javax.naming.directory.*;
-import javax.naming.ldap.InitialLdapContext;
-
-import java.io.File;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Map;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.io.Closeables;
 
 public class ApacheDS {
 
